@@ -35,7 +35,7 @@ app.get('/api/country',async(req,res)=>{
         url: 'https://referential.p.rapidapi.com/v1/country',
         params: {
           fields: 'currency,currency_num_code,currency_code,continent_code,currency,iso_a3,dial_code',
-          limit: '250'
+          limit: '100'
         },
         headers: {
           'X-RapidAPI-Key': `${process.env.RAPID_API_KEY}`,
