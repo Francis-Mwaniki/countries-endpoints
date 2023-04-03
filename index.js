@@ -161,6 +161,26 @@ app.get('/api/country',async(req,res)=>{
                         return res.status(500).json({msg:`Server Error ${error}`});
                   });
                 })
+                /* search country  post*/
+                app.post('/api/search', async (req, res) => {
+                  const searchQuery =  req.body.query;
+                  const query = { 'countries.value': { $eq: searchQuery } };
+                
+                  Use.find(query)
+                    .then(doc => {
+                      if (doc.length > 0) {
+                        const countryNames = doc.flatMap(d => d.countries.filter(c => c.value === searchQuery).map(c => c));
+                        console.log(`Found ${countryNames.length} countries matching query "${searchQuery}":`);
+                        res.send(countryNames);
+                      } else {
+                        return res.status(500).json(`No countries found matching query "${searchQuery}"`);
+                      }
+                    })
+                    .catch(err => {
+                      console.error('Error searching for countries:', err);
+                    });
+                });
+                
 app.listen(3000,()=>{
     console.log(`Server is running on port ${port}`);
 }
