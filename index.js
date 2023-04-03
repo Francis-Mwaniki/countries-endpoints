@@ -1,4 +1,6 @@
 const express=require('express');
+const Use=require('./model/model');
+const mongoose=require('mongoose');
 const app=express();
 const axios = require('axios').default;
 const cors=require('cors');
@@ -6,7 +8,20 @@ app.use(express.json());
 app.use(express.urlencoded({extended:true}));
 app.use(cors());
 const port=process.env.PORT || 3000;
+const DB=process.env.MONGO_URI || 'mongodb+srv://admin:admin@cluster0.xgfuv.mongodb.net/?retryWrites=true&w=majority';
 require('dotenv').config();
+
+/* mongoose connection */
+mongoose.connect(DB,{
+    useNewUrlParser:true,
+    useUnifiedTopology:true,
+}).then(()=>{
+    console.log('MongoDB Connected');
+}
+).catch((err)=>{
+    console.log(err);
+});
+
 app.get('/',(req,res)=>{
     res.send('Hello World');
 });
@@ -43,12 +58,17 @@ app.get('/api/country',async(req,res)=>{
         }
       };
       
-      axios.request(options).then(function (response) {
-            res.send(response.data);
-          console.log(response.data);
+      axios.request(options).then(async function (response) {
+          Use.find({}).then((data) => {
+            res.send(data);
+          }
+          ).catch((err) => {
+            console.error('Error fetching data from database:', err);
+          });
+        
+        
       }).catch(function (error) {
         return res.status(500).json({msg:`Server Error ${error}`});
-          console.error(error);
       });
     });
     /* cities */
